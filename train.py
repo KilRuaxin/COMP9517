@@ -58,7 +58,6 @@ def train_model(model_fn, num_classes, image_path, weight_path=None, save_path="
         missing_keys, _ = net.load_state_dict(weights, strict=False)
         print("missing keys:", missing_keys)
 
-    # 替换最后一层分类器（按模型类型自适应）
     if hasattr(net, 'fc'):
         in_features = net.fc.in_features
         net.fc = nn.Linear(in_features, num_classes)
@@ -93,7 +92,6 @@ def train_model(model_fn, num_classes, image_path, weight_path=None, save_path="
             running_loss += loss.item()
             train_bar.desc = f"train epoch[{epoch+1}/{epochs}] loss:{loss.item():.3f}"
 
-        # 验证
         net.eval()
         acc = 0.0
         with torch.no_grad():
