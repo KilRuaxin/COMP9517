@@ -9,6 +9,7 @@ from torchvision import transforms, datasets
 from tqdm import tqdm
 
 from model_Resnet import resnet34
+from model_Mobilenetv2 import mobilenet_v2_custom
 
 def get_data_loaders(image_path, batch_size=16):
     data_transform = {
@@ -67,6 +68,9 @@ def train_model(model_fn, num_classes, image_path, weight_path=None, save_path="
     elif hasattr(net, 'head'):  # e.g. ViT
         in_features = net.head.in_features
         net.head = nn.Linear(in_features, num_classes)
+    elif hasattr(net, 'base_model') and hasattr(net.base_model, 'classifier'):
+        in_features = net.base_model.classifier[-1].in_features
+        net.base_model.classifier[-1] = nn.Linear(in_features, num_classes)
     else:
         raise ValueError("Unknown model structure. Cannot replace classifier.")
 
@@ -114,10 +118,19 @@ def train_model(model_fn, num_classes, image_path, weight_path=None, save_path="
 
 if __name__ == '__main__':
     image_path = 'D:\CS\WorkPlace\Python\comp9517-project\Aerial_Landscapes_Split'
-    resnet_weights = 'D:\CS\WorkPlace\Python\comp9517-project\\resnet34-pre.pth'
-    train_model(model_fn=resnet34,
+
+    # resnet_weights = 'D:\CS\WorkPlace\Python\comp9517-project\\resnet34-pre.pth'
+    # train_model(model_fn=resnet34,
+    #             num_classes=15,
+    #             image_path=image_path,
+    #             weight_path=resnet_weights,
+    #             save_path='D:\CS\WorkPlace\Python\comp9517-project\\resNet34.pth',
+    #             epochs=3)
+
+    mobilenet_weights = None
+    train_model(model_fn=lambda num_classes: mobilenet_v2_custom(num_classes=num_classes, pretrained=True),
                 num_classes=15,
                 image_path=image_path,
-                weight_path=resnet_weights,
-                save_path='D:\CS\WorkPlace\Python\comp9517-project\\resNet34.pth',
+                weight_path=None,
+                save_path='mobilenetv2.pth',
                 epochs=3)
