@@ -9,10 +9,10 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 from tqdm import tqdm
 
-# 图像路径
+
 data_root = r"D:\CS\WorkPlace\Python\Project\Aerial_Landscapes"
 
-# HOG 参数
+
 hog_params = {
     'orientations': 9,
     'pixels_per_cell': (8, 8),
@@ -48,20 +48,20 @@ y = np.array(y)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# 训练测试划分
+
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
-# SVM 训练
+
 print("Training SVM...")
 svm = SVC(kernel="rbf", C=10, gamma="scale", probability=True)
 svm.fit(X_train, y_train)
 
-# 保存
+
 joblib.dump(svm, "svm_hog_model.pkl")
 joblib.dump(scaler, "svm_hog_scaler.pkl")
 joblib.dump(label_map, "svm_hog_labels.pkl")
 
-# 测试
+
 y_pred = svm.predict(X_test)
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred, target_names=[k for k, v in sorted(label_map.items(), key=lambda x: x[1])]))

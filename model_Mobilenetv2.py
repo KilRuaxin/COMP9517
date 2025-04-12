@@ -29,3 +29,4 @@ class MobileNetV2(nn.Module):
 
 def mobilenet_v2_custom(num_classes=1000, include_top=True, pretrained=False):
     return MobileNetV2(num_classes=num_classes, include_top=include_top, pretrained=pretrained)
+#
